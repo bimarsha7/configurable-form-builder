@@ -33,6 +33,7 @@ Requires Node 20.19+ (tested on Node 24).
 | **4b. Import JSON** (paste, or load a file) with validation | `json/ImportDialog.tsx`, `lib/schema.ts` |
 | **5. Only Context, custom hooks, memo/useCallback/useMemo** | `state/*`, `hooks/*` |
 | **Bonus: no UI framework** | `index.css` (design tokens, light/dark mode) |
+| **Extra: theme switcher** (System / Light / Dark, remembered) | `hooks/useTheme.ts`, `ThemeSwitcher.tsx` |
 
 ## Architecture
 
@@ -51,8 +52,10 @@ src/
   hooks/
     usePreviewForm.ts      Values, touched fields, errors and submit for the preview
     usePersistedConfig.ts  Saves the config to localStorage (demo convenience)
+    useTheme.ts            Theme preference (system/light/dark), persisted and applied to <html>
   components/
     ConfigurableFormBuilder.tsx   Public component: toolbar, two panels, dialogs
+    ThemeSwitcher.tsx      App-level System / Light / Dark control (native radios)
     builder/               Structure editor (recursive FieldList ↔ FieldEditor)
     preview/               Live preview (recursive PreviewFields)
     json/                  Export / import dialogs
@@ -121,11 +124,22 @@ proper labels, `aria-invalid`, `aria-required` and `aria-describedby` pointing t
 hints and errors. Every icon button has a descriptive name (e.g. *Move "Street" up*).
 When moving a field disables the button that was clicked, focus moves to the other
 button. Dialogs use the native `<dialog>`, which provides focus containment and
-Escape to close. The page supports dark mode and `prefers-reduced-motion`.
+Escape to close. The page respects `prefers-reduced-motion`.
+
+### Theming
+
+A System / Light / Dark switcher sits in the page header. "System" (the default)
+follows the OS setting and updates live when it changes; an explicit choice
+overrides it and is saved to localStorage. The resolved theme is written to
+`<html data-theme>`, and the CSS defines the dark tokens once under
+`:root[data-theme='dark']`. A small inline script in `index.html` applies the saved
+theme before first paint, so there is no flash of the wrong theme on reload. The
+switcher lives in `App.tsx`, not inside `ConfigurableFormBuilder`, so the component
+stays themeable by whatever app hosts it.
 
 ## Tests
 
-`npm test` runs 44 tests:
+`npm test` runs 47 tests:
 
 - `lib/tree.test.ts`: every tree operation, including structural sharing and the
   edge cases for moving.
@@ -136,6 +150,8 @@ Escape to close. The page supports dark mode and `prefers-reduced-motion`.
 - `components/ConfigurableFormBuilder.test.tsx`: user-level flows. These cover adding
   and nesting fields, live preview, required and invalid-number validation,
   reordering and deleting, the min/max guard, and export → import.
+- `components/ThemeSwitcher.test.tsx`: following the system theme (including live
+  changes), overriding and persisting a choice, ignoring invalid stored values.
 
 ## Possible next steps
 

@@ -26,7 +26,7 @@
   --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  color-scheme: light dark;
+  color-scheme: light;
   font-family: var(--font);
   line-height: 1.5;
   color: var(--text);
@@ -34,28 +34,32 @@
   -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f141a;
-    --surface: #161d25;
-    --surface-muted: #1d2630;
-    --border: #2b3643;
-    --border-strong: #3d4a5a;
-    --text: #e6ebf1;
-    --text-muted: #9aa7b6;
-    --accent: #4d9cf0;
-    --accent-hover: #6aaef5;
-    --accent-contrast: #0b1520;
-    --focus: #6aaef5;
-    --danger: #f07167;
-    --danger-bg: #3a1d1b;
-    --success: #4ccb8a;
-    --success-bg: #14301f;
-    --text-badge: #6aaef5;
-    --number-badge: #b48ef0;
-    --group-badge: #f0a35a;
-    --shadow: none;
-  }
+/*
+ * The resolved theme ("light" or "dark") is set on <html data-theme> by useTheme,
+ * and before first paint by the inline script in index.html. "System" is resolved
+ * in JS, so the dark tokens are defined once here instead of again in a media query.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f141a;
+  --surface: #161d25;
+  --surface-muted: #1d2630;
+  --border: #2b3643;
+  --border-strong: #3d4a5a;
+  --text: #e6ebf1;
+  --text-muted: #9aa7b6;
+  --accent: #4d9cf0;
+  --accent-hover: #6aaef5;
+  --accent-contrast: #0b1520;
+  --focus: #6aaef5;
+  --danger: #f07167;
+  --danger-bg: #3a1d1b;
+  --success: #4ccb8a;
+  --success-bg: #14301f;
+  --text-badge: #6aaef5;
+  --number-badge: #b48ef0;
+  --group-badge: #f0a35a;
+  --shadow: none;
 }
 
 *,
@@ -123,7 +127,51 @@ textarea {
 }
 
 .app__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 20px;
+}
+
+/* ---------- Theme switcher ---------- */
+
+.theme-switcher {
+  display: inline-flex;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+
+.theme-switcher__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.theme-switcher__option:hover {
+  color: var(--text);
+}
+
+.theme-switcher__option:has(:checked) {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+/* The radio itself is visually hidden, so its label shows the focus ring. */
+.theme-switcher__option:has(:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .app__title {
